@@ -5,6 +5,7 @@ from psycopg2 import sql
 import json
 import re
 from config import DB_CONFIG
+import argparse
 
 class ProductRecommender:
     def __init__(self):
@@ -153,3 +154,28 @@ class ProductRecommender:
 
         df['score'] = df.apply(compute_score, axis=1)
         return df.sort_values(by=['score', 'quantity'], ascending=[False, False]).head(top_k)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--partner_id", required=True)
+    parser.add_argument("--gender", required=True)
+    parser.add_argument("--size", required=True)
+    parser.add_argument("--width")
+    parser.add_argument("--brands", type=json.loads)
+    parser.add_argument("--colors", type=json.loads)
+    parser.add_argument("--top_k", type=int, default=10)
+    args = parser.parse_args()
+
+    recommender = ProductRecommender()
+    recommender.load_data(args.partner_id)
+    recommender.preprocess()
+    recommendations = recommender.recommend(
+        args.gender,
+        args.size,
+        args.width,
+        args.brands,
+        args.colors,
+        args.top_k,
+    )
+
+    print(recommendations.to_json(orient="records"))
