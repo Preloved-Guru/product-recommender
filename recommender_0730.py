@@ -4,26 +4,26 @@ import pandas as pd
 import re
 from typing import List, Dict, Optional, Tuple
 from datetime import datetime
+from dotenv import load_dotenv
+import os
 
 # Database Connection
+load_dotenv()
+
 def connect_to_db():
     """Establish database connection"""
-    USER = "postgres.ywiukswlwjvboycbblbp"
-    PASSWORD = "password"  
-    HOST = "aws-0-us-east-1.pooler.supabase.com"
-    PORT = 5432
-    DBNAME = "postgres"
-
     connection = psycopg2.connect(
-        user=USER,
-        password=PASSWORD,
-        host=HOST,
-        port=PORT,
-        dbname=DBNAME,
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        host=os.getenv('DB_HOST'),
+        port=os.getenv('DB_PORT'),
+        dbname=os.getenv('DB_NAME'),
         sslmode='require'
     )
+    
     cursor = connection.cursor()
     print("Database connection successful!")
+
     
     # Set schema
     schema_name = "wishlist_data"
